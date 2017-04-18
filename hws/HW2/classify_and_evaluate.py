@@ -11,6 +11,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from upload_and_vizualize import camel_to_snake
 from sklearn.feature_selection import RFE
+from sklearn.linear_model import LogisticRegression
 
 def process_categorical(X,cat_col_list):
     cat_col_num_list = [loc for loc,c_name in enumerate(list(X.columns)) if c_name in cat_col_list]
