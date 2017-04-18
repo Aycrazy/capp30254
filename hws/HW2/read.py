@@ -19,6 +19,6 @@ def read(file_name):
 
     return df
 
-def p_read_csv(file_name):
+def p_sread_csv(file_name):
     df = pd.read_csv(file_name)
     return df
