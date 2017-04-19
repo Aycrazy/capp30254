@@ -9,23 +9,6 @@ matplotlib.style.use('ggplot')
 import pylab as pl
 from upload_and_vizualize import camel_to_snake
 
-def list_describe(df,optional_string=None):
-    opt_columns = []
-    all_cols = {}
-    all_cols_caps = {}
-    for index,column in enumerate(df.columns):
-        if optional_string:
-            if column.startswith(optional_string):
-                opt_columns.append(column)
-
-        print(df[str(column)].describe().to_frame(),'\n')
-        if not index:
-            continue
-        all_cols[index-1] = camel_to_snake(column)
-        all_cols_caps[index-1] = column
-    #if len(opt_columns):
-    return all_cols, all_cols_caps, opt_columns
-   #return all_cols
 
 def get_desired_features(dict, desired_features):
     features = [key for key,value in dict.items() if value in desired_features]
