@@ -17,7 +17,7 @@ from sklearn.preprocessing import Imputer
 import seaborn as sn
 from sklearn import tree
 
-def split_data(df, use_seed=None):
+def split_data_cust(df, use_seed=None):
     '''
     Given a pandas datframe sorted by column to have the first column be
     the outcome column, and the following columns to be potential features
@@ -81,6 +81,7 @@ def split_data(X,y,size):
 
     #Output:X_train, X_test, y_train, y_test 
     return train_test_split(X, y, test_size = size, random_state = 0)
+
 
 def model_logistic(X_train, y_train, X_test):
 
