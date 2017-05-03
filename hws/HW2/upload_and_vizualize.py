@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.style.use('ggplot')
 import pylab as pl
+import seaborn as sn
 
 def camel_to_snake(column_name):
     """
@@ -196,4 +197,17 @@ def special_plot(df, column_name,point_of_interest1, point_of_interest2):
     ax4.set_xlabel('Income in Sci Notation')
     ax4.grid()
     plt.tight_layout()
+
+def plot_correlations(df, title):
+    """
+    In:
+        - df: pandas dataframe
+        - title: title for plot
+    Out:
+        -
+    """
+    ax = plt.axes();
+    corr = df.corr()
+    sn.heatmap(corr, xticklabels=corr.columns.values, yticklabels=corr.columns.values, ax=ax);
+    ax.set_title(title);
    
