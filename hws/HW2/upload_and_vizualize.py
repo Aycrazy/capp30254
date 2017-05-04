@@ -75,8 +75,8 @@ def list_describe(df,optional_string=None):
         print(df[str(column)].describe().to_frame(),'\n')
         if not index:
             continue
-        all_cols[index] = camel_to_snake(column)
-        all_cols_caps[index] = column
+        all_cols[index-1] = camel_to_snake(column)
+        all_cols_caps[index-1] = column
 
     return all_cols, all_cols_caps, opt_columns
 

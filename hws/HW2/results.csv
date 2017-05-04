@@ -1,8 +1,39 @@
-model_type,clf,parameters,auc-roc,p_at_5,p_at_10,p_at_20
+model_type,clf,parameters,auc-roc,p_r_f1_s_at_5,p_r_f1_s_at_10,p_r_f1_s_at_20
+RF,"RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini',
+            max_depth=1, max_features='sqrt', max_leaf_nodes=None,
+            min_impurity_split=1e-07, min_samples_leaf=1,
+            min_samples_split=10, min_weight_fraction_leaf=0.0,
+            n_estimators=1, n_jobs=-1, oob_score=False, random_state=None,
+            verbose=0, warm_start=False)","{'n_estimators': 1, 'min_samples_split': 10, 'max_features': 'sqrt', 'max_depth': 1}",0.6559717487831723,"(array([ 0.95310009,  0.47421584]), array([ 0.97179845,  0.34721682]), array([ 0.96235846,  0.40089888]), array([35069,  2569]))","(array([ 0.99873063,  0.67127292]), array([ 0.96472668,  0.98326197]), array([ 0.98143421,  0.79785218]), array([35069,  2569]))","(array([ 1.        ,  0.34130464]), array([ 0.85862157,  1.        ]), array([ 0.92393372,  0.50891442]), array([35069,  2569]))"
+DT,"DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=1,
+            max_features='sqrt', max_leaf_nodes=None,
+            min_impurity_split=1e-07, min_samples_leaf=1,
+            min_samples_split=10, min_weight_fraction_leaf=0.0,
+            presort=False, random_state=None, splitter='best')","{'criterion': 'gini', 'min_samples_split': 10, 'max_features': 'sqrt', 'max_depth': 1}",0.6795106130148071,"(array([ 0.96375535,  0.67676768]), array([ 0.98266275,  0.49552355]), array([ 0.97311722,  0.57213483]), array([35069,  2569]))","(array([ 0.9617417 ,  0.33829391]), array([ 0.92899712,  0.49552355]), array([ 0.94508587,  0.40208465]), array([35069,  2569]))","(array([ 1.        ,  0.34130464]), array([ 0.85862157,  1.        ]), array([ 0.92393372,  0.50891442]), array([35069,  2569]))"
+KNN,"KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+           metric_params=None, n_jobs=1, n_neighbors=5, p=2,
+           weights='uniform')","{'n_neighbors': 5, 'weights': 'uniform', 'algorithm': 'auto'}",0.6895282492688246,"(array([ 0.9509187 ,  0.43274854]), array([ 0.96957427,  0.31685481]), array([ 0.96015587,  0.3658427 ]), array([35069,  2569]))","(array([ 0.96513653,  0.36885464]), array([ 0.93227637,  0.54028805]), array([ 0.94842191,  0.43840809]), array([35069,  2569]))","(array([ 0.96077845,  0.18440282]), array([ 0.82494511,  0.54028805]), array([ 0.88769561,  0.27496038]), array([35069,  2569]))"
+ET,"ExtraTreesClassifier(bootstrap=False, class_weight=None, criterion='gini',
+           max_depth=1, max_features='sqrt', max_leaf_nodes=None,
+           min_impurity_split=1e-07, min_samples_leaf=1,
+           min_samples_split=10, min_weight_fraction_leaf=0.0,
+           n_estimators=1, n_jobs=-1, oob_score=False, random_state=None,
+           verbose=0, warm_start=False)","{'n_estimators': 1, 'criterion': 'gini', 'min_samples_split': 10, 'max_features': 'sqrt', 'max_depth': 1}",0.505562975048434,"(array([ 0.97983612,  0.98245614]), array([ 0.999059  ,  0.71934605]), array([ 0.98935419,  0.8305618 ]), array([35069,  2569]))","(array([ 1.        ,  0.68269997]), array([ 0.96595284,  1.        ]), array([ 0.9826816 ,  0.81143399]), array([35069,  2569]))","(array([ 1.        ,  0.34130464]), array([ 0.85862157,  1.        ]), array([ 0.92393372,  0.50891442]), array([35069,  2569]))"
+AB,"AdaBoostClassifier(algorithm='SAMME',
+          base_estimator=DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=1,
+            max_features=None, max_leaf_nodes=None,
+            min_impurity_split=1e-07, min_samples_leaf=1,
+            min_samples_split=2, min_weight_fraction_leaf=0.0,
+            presort=False, random_state=None, splitter='best'),
+          learning_rate=1.0, n_estimators=1, random_state=None)","{'n_estimators': 1, 'algorithm': 'SAMME'}",0.6559717487831723,"(array([ 0.95310009,  0.47421584]), array([ 0.97179845,  0.34721682]), array([ 0.96235846,  0.40089888]), array([35069,  2569]))","(array([ 0.99873063,  0.67127292]), array([ 0.96472668,  0.98326197]), array([ 0.98143421,  0.79785218]), array([35069,  2569]))","(array([ 1.        ,  0.34130464]), array([ 0.85862157,  1.        ]), array([ 0.92393372,  0.50891442]), array([35069,  2569]))"
+GB,"GradientBoostingClassifier(criterion='friedman_mse', init=None,
+              learning_rate=0.1, loss='deviance', max_depth=1,
+              max_features=None, max_leaf_nodes=None,
+              min_impurity_split=1e-07, min_samples_leaf=1,
+              min_samples_split=2, min_weight_fraction_leaf=0.0,
+              n_estimators=1, presort='auto', random_state=None,
+              subsample=0.5, verbose=0, warm_start=False)","{'learning_rate': 0.1, 'n_estimators': 1, 'subsample': 0.5, 'max_depth': 1}",0.6559717487831723,"(array([ 0.95310009,  0.47421584]), array([ 0.97179845,  0.34721682]), array([ 0.96235846,  0.40089888]), array([35069,  2569]))","(array([ 0.99873063,  0.67127292]), array([ 0.96472668,  0.98326197]), array([ 0.98143421,  0.79785218]), array([35069,  2569]))","(array([ 1.        ,  0.34130464]), array([ 0.85862157,  1.        ]), array([ 0.92393372,  0.50891442]), array([35069,  2569]))"
 LR,"LogisticRegression(C=0.01, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l1', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False)","{'penalty': 'l1', 'C': 0.01}",1.0,1.0,0.6599893162393162,0.32995059420483375
-KNN,"KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
-           metric_params=None, n_jobs=1, n_neighbors=5, p=2,
-           weights='uniform')","{'algorithm': 'auto', 'n_neighbors': 5, 'weights': 'uniform'}",0.565129201455817,0.406517094017094,0.23798076923076922,0.11897449592736013
+          verbose=0, warm_start=False)","{'C': 0.01, 'penalty': 'l1'}",0.6594608997547525,"(array([ 0.93760662,  0.17969165]), array([ 0.95600103,  0.1315687 ]), array([ 0.94671448,  0.15191011]), array([35069,  2569]))","(array([ 0.94066421,  0.14855169]), array([ 0.90863726,  0.21759439]), array([ 0.9243734 ,  0.17656349]), array([35069,  2569]))","(array([ 0.94583375,  0.12461804]), array([ 0.81211326,  0.36512262]), array([ 0.8738877 ,  0.18581616]), array([35069,  2569]))"

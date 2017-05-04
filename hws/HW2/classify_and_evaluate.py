@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 import seaborn as sn
 import time
+import math
 
 matplotlib.style.use('ggplot')
 import pylab as pl
@@ -149,7 +150,6 @@ def define_clfs_params(grid_size):
     'ET': { 'n_estimators': [10,100], 'criterion' : ['gini', 'entropy'] ,'max_depth': [5,50], 'max_features': ['sqrt','log2'],'min_samples_split': [2,10]},
     'AB': { 'algorithm': ['SAMME', 'SAMME.R'], 'n_estimators': [1,10,100,1000,10000]},
     'GB': {'n_estimators': [10,100], 'learning_rate' : [0.001,0.1,0.5],'subsample' : [0.1,0.5,1.0], 'max_depth': [5,50]},
-    'NB' : {},
     'DT': {'criterion': ['gini', 'entropy'], 'max_depth': [1,5,10,20,50,100], 'max_features': ['sqrt','log2'],'min_samples_split': [2,5,10]},
     'SVM' :{'C' :[0.00001,0.0001,0.001,0.01,0.1,1,10],'kernel':['linear']},
     'KNN' :{'n_neighbors': [1,5,10,25,50,100],'weights': ['uniform','distance'],'algorithm': ['auto','ball_tree','kd_tree']}
@@ -167,7 +167,7 @@ def define_clfs_params(grid_size):
     'SVM' :{'C' :[0.01],'kernel':['linear']},
     'KNN' :{'n_neighbors': [5],'weights': ['uniform'],'algorithm': ['auto']}
            }
-    
+
     if (grid_size == 'large'):
         return clfs, large_grid
     elif (grid_size == 'small'):
@@ -184,14 +184,21 @@ def generate_binary_at_k(y_scores, k):
     test_predictions_binary = [1 if x < cutoff_index else 0 for x in range(len(y_scores))]
     return test_predictions_binary
 
-def precision_at_k(y_true, y_scores, k):
+def scores_at_k(y_true, y_scores, k):
     '''
     '''
     preds_at_k = generate_binary_at_k(y_scores, k)
-    #precision, _, _, _ = metrics.precision_recall_fscore_support(y_true, preds_at_k)
+    precision, recall, fscore, support = precision_recall_fscore_support(y_true, preds_at_k)
     #precision = precision[1]  # only interested in precision for label 1
-    precision = precision_score(y_true, preds_at_k)
-    return precision
+    #precision = precision_score(y_true, preds_at_k)
+    return precision, recall, fscore, support
+
+def recall_at_k(y_true, y_scores, k):
+    '''
+    '''
+    preds_at_k = generate_binary_at_k(y_scores, k)
+    recall = recall_score(y_true, preds_at_k)
+    return recall
 
 def do_learning(X_training, Y_training, X_test, Y_test, reference_dic, model_class):
 
@@ -220,18 +227,31 @@ def do_learning(X_training, Y_training, X_test, Y_test, reference_dic, model_cla
     return (expected, predicted, best_features_names, accuracy)
 
 
-def run_mods(models_to_run, clfs, grid, X_training, Y_training, X_test, Y_test, print_plots='no'):
+#ADD THE ABILITY FOR SOMEONE TO GIVE CUSTOM PARAMETRS FOR A PARTICULAR MODEL
+#Custom params will be a ditionary that has models:param:value
+
+def run_mods(models_to_run, clfs, grid, X_training, Y_training, X_test, Y_test, outcome_col,labels, print_plots='no', custom_params = {}): #ADD Custom PARAMS
 
     '''
     '''
-    results_df =  pd.DataFrame(columns=('model_type','clf', 'parameters', 'auc-roc','p_at_5', 'p_at_10', 'p_at_20'))
+    confusion_matrices = {}
+    conf_count = 0
+
+    results_df =  pd.DataFrame(columns=('model_type','clf', 'parameters', 'auc-roc','p_r_f1_s_at_5', 'p_r_f1_s_at_10', 'p_r_f1_s_at_20'))
 
     for index, clf in enumerate([clfs[x] for x in models_to_run]):
 
         parameter_cols = grid[models_to_run[index]]
 
+        if len(custom_params) > 0:
+            for model in custom_params.keys():
+                for param in model.keys():
+                    grid[models_to_run[index]][param] = custom_params[model][param]
+                        
         for p in ParameterGrid(parameter_cols):
             try:
+
+                
                 clf.set_params(**p)
 
                 start_time_training = time.time()
@@ -245,18 +265,31 @@ def run_mods(models_to_run, clfs, grid, X_training, Y_training, X_test, Y_test, 
                 roc_score = roc_auc_score(Y_test, y_pred_prob)
                 y_pred_prob_sorted, y_test_sorted = zip(*sorted(zip(y_pred_prob, Y_test), reverse=True))
 
+                '''
+                k_scores = []
+
+                for k in [5.0,10.0,20.0]:
+                    k_scores.append(precision, recall, f1, support = scores_at_k(y_test_sorted,y_pred_prob_sorted,k))
+                '''
+
                 results_df.loc[len(results_df)] = [models_to_run[index],clf, p,
                                                        roc_auc_score(Y_test, y_pred_prob),
-                                                       precision_at_k(y_test_sorted,y_pred_prob_sorted,5.0),
-                                                       precision_at_k(y_test_sorted,y_pred_prob_sorted,10.0),
-                                                       precision_at_k(y_test_sorted,y_pred_prob_sorted,20.0)]
+                                                       scores_at_k(y_test_sorted,y_pred_prob_sorted,5.0),
+                                                       scores_at_k(y_test_sorted,y_pred_prob_sorted,10.0),
+                                                       scores_at_k(y_test_sorted,y_pred_prob_sorted,20.0)]
+
+                confusion_matrices[models_to_run[index]] = create_confusion_in_loop(Y_test, clf.predict(X_test), outcome_col, labels, models_to_run[index])
+                
                 if print_plots == 'yes':
-                    plot_precision_recall_n(Y_test,y_pred_prob,clf)
+                    plot_precision_recall_n(Y_test,y_pred_prob,clf)    
+
             except IndexError as e:
                 print('Error:',e)
                 continue
 
-    return results_df
+            conf_count+=1
+
+    return results_df, confusion_matrices
 
 
 def plot_precision_recall_n(y_true, y_prob, model_name):
@@ -318,7 +351,7 @@ def plot_confusion_matrix(data, col_name, labels, model_name):
               yticklabels = yticks, fmt = '')
     ax.set_title('Confusion Matrix for' + ' ' + model_name + col_name)
 
-def create_confusion_matrix(df_y_test,df_y_pred, col_name, labels, model_name):
+def create_confusion_matrix(df_y_test, df_y_pred, col_name, labels, model_name):
     '''
     Given an actual set of y values (based on the test set) and a predicted set of y values 
     (based on the test set), a column name, and a column name this function will produce
@@ -330,4 +363,31 @@ def create_confusion_matrix(df_y_test,df_y_pred, col_name, labels, model_name):
     array = confusion_matrix(actual, predicted)
     df_cxm = pd.DataFrame(array, range(2), range(2))
     plot_confusion_matrix(df_cxm,col_name, labels, model_name)
+
+def create_confusion_in_loop(y_test, y_pred, col_name, labels, model_name):
+    '''
+    Given an actual set of y values (based on the test set) and a predicted set of y values 
+    (based on the test set), a column name, and a column name this function will produce
+    a confusion matrix and then plot that matrix, utilizing the plot_confusion_matrix function.
+    '''
+    actual = pd.Series(y_test, name = 'Actual')
+    predicted = pd.Series(y_pred, name = 'Predicted')
+    array = confusion_matrix(actual, predicted)
+    return pd.DataFrame(array, range(2), range(2))
+    #plot_confusion_matrix(df_cxm,col_name, labels, model_name)
+
+def plot_confusion_matrices(data, col_name, labels, model_name):
+    '''
+    Given a pandas dataframe with a confusion confusion_matrix
+    and a list of axis lables plot the results
+    '''
+    sn.set(font_scale=1.4)#for label size
+    plt.suptitle('Confusion Matrix of Various Classifiers')
+    #plt.subplot(3, ceil(len(confusion_matrices)/3), num+1)
+    xticks =  labels
+    yticks =  labels
+    ax = plt.axes()
+    sn.heatmap(data, annot=True,annot_kws={"size": 12}, linewidths=.5, xticklabels = xticks,  
+              yticklabels = yticks, fmt = '')
+    ax.set_title('Confusion Matrix for' + ' ' + model_name + col_name)
 
