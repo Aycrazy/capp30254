@@ -182,8 +182,6 @@ def define_clfs_params(grid_size):
 
 def generate_binary_at_k(y_scores, k):
     '''
-    Generates binary scores from test predictions for evaluation methods.
-    Adjusted from: https://github.com/rayidghani/magicloops/blob/master/magicloops.py
     '''
     cutoff_index = int(len(y_scores) * (k / 100.0))
     test_predictions_binary = [1 if x < cutoff_index else 0 for x in range(len(y_scores))]
@@ -191,10 +189,6 @@ def generate_binary_at_k(y_scores, k):
 
 def scores_at_k(y_true, y_scores, k):
     '''
-    Given the true y outcome values and the predicted outcome variables, 
-    this function calls the sklearn functions to calcuate precision,
-    recall, fscore, and support.
-    Adjusted from: https://github.com/rayidghani/magicloops/blob/master/magicloops.py
     '''
     preds_at_k = generate_binary_at_k(y_scores, k)
     precision, recall, fscore, support = precision_recall_fscore_support(y_true, preds_at_k)
@@ -202,6 +196,12 @@ def scores_at_k(y_true, y_scores, k):
     #precision = precision_score(y_true, preds_at_k)
     return precision, recall, fscore, support
 
+def recall_at_k(y_true, y_scores, k):
+    '''
+    '''
+    preds_at_k = generate_binary_at_k(y_scores, k)
+    recall = recall_score(y_true, preds_at_k)
+    return recall
 
 def do_learning(X_training, Y_training, X_test, Y_test, reference_dic, model_class):
 
@@ -236,20 +236,6 @@ def do_learning(X_training, Y_training, X_test, Y_test, reference_dic, model_cla
 def run_mods(models_to_run, clfs, grid, X_training, Y_training, X_test, Y_test, outcome_col,labels, print_plots='no', custom_params = {}): #ADD Custom PARAMS
 
     '''
-        Loops through classifiers and stores metrics in pandas df.
-    Df gets returned.
-    Adjusted from: https://github.com/rayidghani/magicloops/blob/master/magicloops.py
-    In:
-        - models_to_run: (list) of models to run
-        - clfs: (dict) of classifiers
-        - grid: (dict) of classifiers with set of parameters to train on
-        - X_train: features from training set
-        - X_test: features from test set
-        - y_train: targets of training set
-        - y_test: targets of test set
-        - print_plots: (bool) whether or not to print plots
-    Out:
-        - pandas df
     '''
     confusion_matrices = {}
     conf_count = 0
@@ -308,8 +294,6 @@ def run_mods(models_to_run, clfs, grid, X_training, Y_training, X_test, Y_test, 
 
 def plot_precision_recall_n(y_true, y_prob, model_name):
     '''
-     Function to plot precision recall curve.
-    Adjusted from: https://github.com/rayidghani/magicloops/blob/master/magicloops.py
     '''
 
     y_score = y_prob
@@ -382,9 +366,7 @@ def create_confusion_matrix(df_y_test, df_y_pred, col_name, labels, model_name):
 
 def create_confusion_in_loop(y_test, y_pred, col_name, labels, model_name):
     '''
-     Given an actual set of y values (based on the test set) and a predicted set of y values 
-    (based on the test set), a column name, and a column name this function will produce
-    a confusion matrix and then plot that matrix, utilizing the plot_confusion_matrix function.
+    
     '''
     actual = pd.Series(y_test, name = 'Actual')
     predicted = pd.Series(y_pred, name = 'Predicted')
@@ -395,8 +377,7 @@ def create_confusion_in_loop(y_test, y_pred, col_name, labels, model_name):
 
 def plot_confusion_matrices(data, col_name, labels, model_name):
     '''
-    Given a pandas dataframe with a confusion confusion_matrix
-    and a list of axis lables plot the results
+
     '''
     sn.set(font_scale=1.4)#for label size
     plt.suptitle('Confusion Matrix of Various Classifiers')
